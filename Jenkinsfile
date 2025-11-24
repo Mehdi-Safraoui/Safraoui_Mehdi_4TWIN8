@@ -6,7 +6,13 @@ pipeline {
         maven 'M2_HOME'
     }
 
+    environment {
+        IMAGE_NAME = "mehdisafraoui/student-management"
+        TAG = "latest"
+    }
+
     stages {
+
         stage('GIT') {
             steps {
                 git branch: 'main',
@@ -14,9 +20,27 @@ pipeline {
             }
         }
 
-        stage ('Compile Stage') {
+        stage('Build Maven') {
             steps {
-                sh 'mvn clean compile'
+                sh 'mvn clean package -DskipTests'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    dockerImage = docker.build("${env.IMAGE_NAME}:${env.TAG}")
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub') {
+                        dockerImage.push()
+                    }
+                }
             }
         }
     }
