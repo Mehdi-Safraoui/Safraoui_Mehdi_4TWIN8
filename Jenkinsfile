@@ -26,6 +26,14 @@ pipeline {
             }
         }
 
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('sonarqube') {
+                    sh 'mvn sonar:sonar -Dsonar.projectKey=student-management -Dsonar.host.url=http://192.168.33.10:9000'
+                }
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
                 script {
