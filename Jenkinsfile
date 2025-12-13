@@ -51,5 +51,16 @@ pipeline {
                 }
             }
         }
+
+        /* ===== NOUVEAU STAGE POUR L’ATELIER 3 ===== */
+        stage('Deploy to Kubernetes') {
+            steps {
+                sh '''
+                  kubectl apply -f k8s/mysql-deployment.yaml
+                  kubectl apply -f k8s/spring-config.yaml
+                  kubectl apply -f k8s/spring-deployment.yaml
+                '''
+            }
+        }
     }
 }
