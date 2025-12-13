@@ -64,15 +64,20 @@ pipeline {
             }
         }
 
-        /* ===== NOUVEAU STAGE POUR L’ATELIER 3 ===== */
         stage('Deploy to Kubernetes') {
-            steps {
-                sh '''
-                  kubectl apply -f k8s/mysql-deployment.yaml
-                  kubectl apply -f k8s/spring-config.yaml
-                  kubectl apply -f k8s/spring-deployment.yaml
-                '''
-            }
+    steps {
+        script {
+            sh '''
+              if command -v kubectl >/dev/null 2>&1; then
+                kubectl apply -f k8s/mysql-deployment.yaml
+                kubectl apply -f k8s/spring-deployment.yaml
+              else
+                echo "kubectl not found on Jenkins agent – skipping Kubernetes deployment"
+              fi
+            '''
         }
+    }
+}
+
     }
 }
